@@ -145,3 +145,6 @@ secrets/
 *.pem
 *.key
 !public.key
+
+# Secret Sauce
+docs/
