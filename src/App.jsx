@@ -281,9 +281,9 @@ const App = () => {
   const getWeekName = (week) => {
     const names = {
       1: 'Fundamentals',
-      2: 'Intermediate',
-      3: 'Algorithms',
-      4: 'Integration'
+      2: 'Data Structures',
+      3: 'Data Transformation',
+      4: 'Integration & Speed'
     }
     return names[week] || 'Week'
   }
