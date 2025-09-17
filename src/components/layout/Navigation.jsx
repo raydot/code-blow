@@ -5,7 +5,8 @@ const Navigation = ({
   setCurrentDay, 
   completedDays, 
   setCompletedDays,
-  markComplete 
+  markComplete,
+  markIncomplete 
 }) => {
   return (
     <div className="mt-8 flex items-center justify-between">
@@ -37,11 +38,7 @@ const Navigation = ({
         )}
         {completedDays.has(currentDay) && (
           <button
-            onClick={() => {
-              const newCompleted = new Set(completedDays)
-              newCompleted.delete(currentDay)
-              setCompletedDays(newCompleted)
-            }}
+            onClick={markIncomplete}
             className="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors font-medium"
           >
             Mark Incomplete
