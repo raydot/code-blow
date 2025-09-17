@@ -1,18 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { curriculum } from './curriculum.js'
-import { initializePluginSystem, PluginSystemContext } from './plugins/PluginBootstrap.js'
+import {
+  initializePluginSystem,
+  PluginSystemContext
+} from './plugins/PluginBootstrap.js'
 import Header from './components/layout/Header.jsx'
 import Navigation from './components/layout/Navigation.jsx'
 import Footer from './components/layout/Footer.jsx'
 import ProblemDescription from './components/problem/ProblemDescription.jsx'
 import CodePanel from './components/CodePanel.jsx'
 
+// Just for testing:
+import OllamaTest from './components/OllamaTest.jsx'
+
 const App = () => {
   // Plugin system state
   const [pluginSystem, setPluginSystem] = useState(null)
   const [isInitializing, setIsInitializing] = useState(true)
   const [initError, setInitError] = useState(null)
-  
+
   // UI state (managed by plugins but reflected in React state for rendering)
   const [currentDay, setCurrentDay] = useState(1)
   const [completedDays, setCompletedDays] = useState(new Set())
@@ -23,7 +29,7 @@ const App = () => {
   const [testResults, setTestResults] = useState(null)
   const [isRunningTests, setIsRunningTests] = useState(false)
   const [problem, setProblem] = useState(null)
-  
+
   // Refs for event handlers
   const eventHandlersRef = useRef(new Map())
 
@@ -35,16 +41,16 @@ const App = () => {
         const pluginManager = await initializePluginSystem({
           debug: process.env.NODE_ENV === 'development'
         })
-        
+
         const context = new PluginSystemContext(pluginManager)
         setPluginSystem(context)
-        
+
         // Set up event handlers
         setupEventHandlers(context)
-        
+
         // Load initial state from plugins
         await loadInitialState(context)
-        
+
         setIsInitializing(false)
         console.log('[App] Plugin system initialized successfully')
       } catch (error) {
@@ -76,7 +82,7 @@ const App = () => {
 
     // Progress updated event
     const handleProgressUpdated = (data) => {
-      setCompletedDays(prev => {
+      setCompletedDays((prev) => {
         const newSet = new Set(prev)
         if (data.completed) {
           newSet.add(data.day)
@@ -175,7 +181,7 @@ const App = () => {
       const uiState = await context.hooks.executePlugin('UIStatePlugin', {
         action: 'getUIState'
       })
-      
+
       if (uiState) {
         setCurrentDay(uiState.currentDay)
         setShowSolution(uiState.showSolution)
@@ -186,7 +192,7 @@ const App = () => {
       const progress = await context.hooks.executePlugin('UserProgressPlugin', {
         action: 'getProgress'
       })
-      
+
       if (progress) {
         setCompletedDays(new Set(progress.completedDays))
       }
@@ -195,7 +201,7 @@ const App = () => {
       const timerState = await context.hooks.executePlugin('TimerPlugin', {
         action: 'getTime'
       })
-      
+
       if (timerState) {
         setTimer(timerState.time)
         setIsRunning(timerState.isRunning)
@@ -203,7 +209,6 @@ const App = () => {
 
       // Load current problem
       await context.loadProblem(uiState?.currentDay || 1)
-      
     } catch (error) {
       console.error('[App] Failed to load initial state:', error)
     }
@@ -268,7 +273,9 @@ const App = () => {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60)
     const secs = seconds % 60
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    return `${mins.toString().padStart(2, '0')}:${secs
+      .toString()
+      .padStart(2, '0')}`
   }
 
   const weekColors = {
@@ -324,7 +331,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-6xl mx-auto">
-        <Header 
+        <Header
           currentDay={currentDay}
           completedDays={completedDays}
           timer={timer}
@@ -335,14 +342,14 @@ const App = () => {
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ProblemDescription 
+          <ProblemDescription
             currentProblem={problem}
             currentDay={currentDay}
             completedDays={completedDays}
             weekColors={weekColors}
           />
 
-          <CodePanel 
+          <CodePanel
             userCode={userCode}
             setUserCode={handleSetUserCode}
             isRunning={isRunning}
@@ -358,7 +365,7 @@ const App = () => {
           />
         </div>
 
-        <Navigation 
+        <Navigation
           currentDay={currentDay}
           setCurrentDay={handleSetCurrentDay}
           completedDays={completedDays}
@@ -368,6 +375,7 @@ const App = () => {
         />
 
         <Footer completedDays={completedDays} />
+        <OllamaTest />
       </div>
     </div>
   )
